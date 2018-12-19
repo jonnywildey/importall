@@ -3,10 +3,14 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { TypescriptParser, DefaultDeclaration } from 'typescript-parser';
+import { promisify } from 'util';
 
 
 import * as glob from "glob";
-import { dirname } from "path";
+import { dirname, join } from "path";
+const promiseGlob = promisify(glob);
+
+const INDEX_PATH = "index.ts";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -21,7 +25,9 @@ export function activate(context: vscode.ExtensionContext) {
         async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 
             const dirPath = dirname(document.uri.fsPath);
-            const filesInPath = glob.sync(`${dirPath}/*.ts`).filter(f => f !== dirPath);
+            const allFilesInPath = (await promiseGlob(`${dirPath}/*.ts`));
+            const ignorePaths = [join(dirPath, INDEX_PATH), document.uri.fsPath];
+            const filesInPath = allFilesInPath.filter(f => !ignorePaths.some(p => p === f));
 
             const parser = new TypescriptParser();
 
