@@ -3,6 +3,7 @@
     "displayName": "importall",
     "description": "",
     "version": "0.0.1",
+    "publisher": "jonnywildey",
     "engines": {
         "vscode": "^1.29.1"
     },
