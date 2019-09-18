@@ -2,7 +2,7 @@
     "name": "importall",
     "displayName": "importall",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "jonnywildey",
     "engines": {
         "vscode": "^1.29.1"
