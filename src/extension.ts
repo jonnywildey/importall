@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
         async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 
             const dirPath = dirname(document.uri.fsPath);
-            const allFilesInPath = await promiseGlob(`${dirPath}/*.ts`);
+            const allFilesInPath = await promiseGlob(`${dirPath}/*.ts*`);
             const ignorePaths = [join(dirPath, INDEX_PATH), document.uri.fsPath];
             const filesInPath = allFilesInPath.filter(f => !ignorePaths.some(p => p === f));
 
