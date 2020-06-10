@@ -8,14 +8,14 @@ import { promisify } from 'util';
 
 import * as glob from "glob";
 import { dirname, join } from "path";
-const promiseGlob = promisify(glob);
+const promiseGlob = promisify(glob as any);
 
 const INDEX_PATH = "index.ts";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Importall extension activated!');
+    console.log('importall extension activated!');
 
     let provider1 = vscode.languages.registerCompletionItemProvider('typescript', {
 
@@ -24,11 +24,11 @@ export function activate(context: vscode.ExtensionContext) {
             const dirPath = dirname(document.uri.fsPath);
             const allFilesInPath = await promiseGlob(`${dirPath}/*.ts*`);
             const ignorePaths = [join(dirPath, INDEX_PATH), document.uri.fsPath];
-            const filesInPath = allFilesInPath.filter(f => !ignorePaths.some(p => p === f));
+            const filesInPath = allFilesInPath.filter((f: any) => !ignorePaths.some(p => p === f));
 
             const parser = new TypescriptParser();
 
-            const declarations = await Promise.all(filesInPath.map(fp => {
+            const declarations: any[] = await Promise.all(filesInPath.map((fp: any) => {
                 return parser.parseFile(fp, "./");
             }));
 
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
                 if (exportedDeclarations.length === 0) {
                     return "";
                 }
-                return `import { ${exportedDeclarations.map(d => {
+                return `import { ${exportedDeclarations.map((d: any) => {
                     if (d instanceof DefaultDeclaration) {
                         return `default as ${d.name}`;
                     }
@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
                 if (exportedDeclarations.length === 0) {
                     return "";
                 }
-                return `export { ${exportedDeclarations.map(d => {
+                return `export { ${exportedDeclarations.map((d: any) => {
                     if (d instanceof DefaultDeclaration) {
                         return `default as ${d.name}`;
                     }

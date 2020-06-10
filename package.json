@@ -1,9 +1,13 @@
 {
     "name": "importall",
     "displayName": "importall",
-    "description": "",
+    "description": "allows easy importing and exporting of all files local to a directory.",
     "version": "0.0.2",
     "publisher": "jonnywildey",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jonnywildey/importall"
+    },
     "engines": {
         "vscode": "^1.29.1"
     },
@@ -13,22 +17,38 @@
     "activationEvents": [
         "*"
     ],
-    "main": "./out/extension",
+    "icon": "images/icon.png",
+    "galleryBanner": {
+        "color": "#F05E23",
+        "theme": "dark"
+    },
+    "main": "./dist/extension",
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
+        "lint": "tslint --project .",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "test": "jest",
+        "coverage": "jest --coverage",
+        "vscode:prepublish": "webpack --mode production",
+        "webpack": "rimraf dist && webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
         "vsix": "vsce package"
     },
     "devDependencies": {
         "@types/glob": "7.1.2",
-        "@types/mocha": "7.0.2",
+        "@types/jest": "25.2.1",
         "@types/node": "14.0.13",
+        "jest": "25.5.2",
+        "rimraf": "3.0.2",
+        "ts-jest": "25.4.0",
+        "ts-loader": "7.0.2",
         "tslint": "6.1.2",
+        "tslint-config-prettier": "1.18.0",
+        "tslint-plugin-prettier": "2.3.0",
         "typescript": "3.9.5",
-        "vscode": "1.1.37"
+        "vscode": "1.1.37",
+        "webpack": "4.43.0",
+        "webpack-cli": "3.3.11"
     },
     "dependencies": {
         "glob": "7.1.6",
