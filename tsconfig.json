@@ -6,7 +6,7 @@
         "esModuleInterop": true,
         "target": "es5",
         "module": "es6",
-        "outDir": "dist",
+        "outDir": "out",
         "types": [
             "node",
             "jest"

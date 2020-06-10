@@ -1,74 +1,36 @@
-'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { TypescriptParser, DefaultDeclaration } from 'typescript-parser';
-import { promisify } from 'util';
+import { importall } from "./importall";
+import { ignoreGlobs } from "./ignoreGlobs";
 
-
-import * as glob from "glob";
-import { dirname, join } from "path";
-const promiseGlob = promisify(glob as any);
-
-const INDEX_PATH = "index.ts";
+const IMPORT_ALL_COMMAND = "importall.import-all";
+const EXPORT_ALL_COMMAND = "importall.export-all";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     console.log('importall extension activated!');
 
-    let provider1 = vscode.languages.registerCompletionItemProvider('typescript', {
+    const completionItemProvider = vscode.languages.registerCompletionItemProvider(["typescript", "typescriptreact"], {
 
         async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 
-            const dirPath = dirname(document.uri.fsPath);
-            const allFilesInPath = await promiseGlob(`${dirPath}/*.ts*`);
-            const ignorePaths = [join(dirPath, INDEX_PATH), document.uri.fsPath];
-            const filesInPath = allFilesInPath.filter((f: any) => !ignorePaths.some(p => p === f));
+            const importAllText = await importall({
+                filePath: document.uri.fsPath,
+                ignoreGlobs,
+                importKeyWord: "import"
+            });
 
-            const parser = new TypescriptParser();
-
-            const declarations: any[] = await Promise.all(filesInPath.map((fp: any) => {
-                return parser.parseFile(fp, "./");
-            }));
-
-            const importText = declarations.map(f => {
-                if (!f.declarations || f.declarations.length === 0) {
-                    return "";
-                }
-                const exportedDeclarations = f.declarations.filter((f: any) => f.isExported);
-                if (exportedDeclarations.length === 0) {
-                    return "";
-                }
-                return `import { ${exportedDeclarations.map((d: any) => {
-                    if (d instanceof DefaultDeclaration) {
-                        return `default as ${d.name}`;
-                    }
-                    return d.name;
-                }).join(", ")} } from "./${f.parsedPath.name}";`;
-            }).join("\n");
+            const exportAllText = await importall({
+                filePath: document.uri.fsPath,
+                ignoreGlobs,
+                importKeyWord: "export"
+            });
 
             const importAllCompletion = new vscode.CompletionItem('Import all from current directory');
-            importAllCompletion.insertText = importText;
-
-            const exportText = declarations.map(f => {
-                if (!f.declarations || f.declarations.length === 0) {
-                    return "";
-                }
-                const exportedDeclarations = f.declarations.filter((f: any) => f.isExported);
-                if (exportedDeclarations.length === 0) {
-                    return "";
-                }
-                return `export { ${exportedDeclarations.map((d: any) => {
-                    if (d instanceof DefaultDeclaration) {
-                        return `default as ${d.name}`;
-                    }
-                    return d.name;
-                }).join(", ")} } from "./${f.parsedPath.name}";`;
-            }).join("\n");
+            importAllCompletion.insertText = importAllText;
 
             const exportAllCompletion = new vscode.CompletionItem('Export all from current directory');
-            exportAllCompletion.insertText = exportText;
+            exportAllCompletion.insertText = exportAllText;
 
             return [
                 importAllCompletion,
@@ -77,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(provider1);
+    context.subscriptions.push(completionItemProvider);
 }
 
 // this method is called when your extension is deactivated
