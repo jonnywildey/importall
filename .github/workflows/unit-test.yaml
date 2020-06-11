@@ -31,7 +31,7 @@ jobs:
       run: npm run coverage
     - uses: codecov/codecov-action@v1
       with:
-        token: 3b291d74-faaf-441e-b261-a5ac25b39149
+        token: 54b1b381-9c64-4b83-83bb-529068806351
         file: ./coverage/clover.xml # optional
         name: importall # optional
         fail_ci_if_error: true # optional (default = false)
