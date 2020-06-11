@@ -59,4 +59,7 @@ build
 dist
 out
 
+# versions
+*.vsix
+
 lib/services/budgetPlannerService/proto
