@@ -1,4 +1,4 @@
-import { importall } from "./importall";
+import { importall, getParsedFiles } from "./importall";
 import { ignoreTest, ignoreGlobs } from "./ignoreGlobs";
 import { join } from "path";
 
@@ -9,11 +9,13 @@ describe("importall", () => {
 
   it("imports all modules and types", async () => {
 
-    const importStatement = await importall({
+
+    const parsedFiles = await getParsedFiles({
       filePath: join(ORCHARD_DIR, "index.ts"),
       ignoreGlobs: [ignoreTest],
-      importKeyWord: "import"
     });
+
+    const importStatement = importall({ parsedFiles, importKeyword: "import" });
 
     expect(importStatement).toEqual(`import { IAppleTreeParams, appleTree } from "./appleTree";
 import { IAppleTreeViewProps, appleTreeView } from "./appleTreeView";
@@ -24,11 +26,11 @@ import { IPeachTreeParams, peachTree } from "./peachTree";`);
 
   it("exports all modules and types, including test types that aren't ignored", async () => {
 
-    const exportStatement = await importall({
+    const parsedFiles = await getParsedFiles({
       filePath: join(ORCHARD_DIR, "index.ts"),
       ignoreGlobs: [],
-      importKeyWord: "export"
     });
+    const exportStatement = importall({ parsedFiles, importKeyword: "export" });
 
     expect(exportStatement).toEqual(`export { ITestParams } from "./appleTree.test";
 export { IAppleTreeParams, appleTree } from "./appleTree";
@@ -40,11 +42,11 @@ export { IPeachTreeParams, peachTree } from "./peachTree";`);
 
   it("ignores index using the default globs", async () => {
 
-    const importStatement = await importall({
+    const parsedFiles = await getParsedFiles({
       filePath: join(ORCHARD_DIR, "newFile.ts"),
       ignoreGlobs,
-      importKeyWord: "import"
     });
+    const importStatement = importall({ parsedFiles, importKeyword: "import" });
 
     expect(importStatement).toEqual(`import { IAppleTreeParams, appleTree } from "./appleTree";
 import { IAppleTreeViewProps, appleTreeView } from "./appleTreeView";

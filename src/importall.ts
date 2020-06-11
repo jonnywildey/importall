@@ -7,32 +7,41 @@ const promiseGlob = promisify(glob);
 
 export type ImportKeyword = "import" | "export";
 
-export interface IImportAllParams {
-  importKeyWord: ImportKeyword;
+const TS_EXTENSION_GLOB = "*.{ts,tsx}";
+
+export interface IGetParsedFilesParams {
   filePath: string;
   ignoreGlobs: string[];
 }
 
-const TS_EXTENSION_GLOB = "*.{ts,tsx}";
-
-export const importall = async ({ filePath, ignoreGlobs, importKeyWord }: IImportAllParams) => {
+export const getParsedFiles = async ({ ignoreGlobs, filePath }: IGetParsedFilesParams) => {
   // Get applicable files
   const dirPath = dirname(filePath);
   const ignorePaths = [filePath, ...ignoreGlobs.map(ignoreGlob => join(dirPath, ignoreGlob))];
   const filesInPath = await promiseGlob(`${dirPath}/${TS_EXTENSION_GLOB}`, {
     ignore: ignorePaths
   });
-
   // Parse files
   const parser = new TypescriptParser();
-  const parsedFiles = await Promise.all(filesInPath.map((fp) => parser.parseFile(fp, "./")));
-
-  const importText = parsedFiles.map(parsedFile => generateImportStatementsFromFile(parsedFile, importKeyWord)).join("\n");
-
-  return importText;
+  return await Promise.all(filesInPath.map((fp) => parser.parseFile(fp, "./")));
 }
 
-const generateImportStatementsFromFile = (parsedFile: File, importKeyWord: ImportKeyword): string => {
+
+export interface IImportAllParams {
+  importKeyword: ImportKeyword;
+  parsedFiles: File[];
+}
+
+export const importall = ({ parsedFiles, importKeyword }: IImportAllParams) => {
+  return parsedFiles.map(parsedFile => generateImportStatementsFromFile(parsedFile, importKeyword)).join("\n");
+}
+
+export interface IGenerateImportStatementsFromFileParams {
+  parsedFiles: File[];
+  importKeyword: ImportKeyword;
+}
+
+const generateImportStatementsFromFile = (parsedFile: File, importKeyword: ImportKeyword): string => {
   // Make sure there are some declarations
   if (!parsedFile.declarations || parsedFile.declarations.length === 0) {
     return "";
@@ -42,7 +51,7 @@ const generateImportStatementsFromFile = (parsedFile: File, importKeyWord: Impor
     return "";
   }
   // Generate import statement
-  return `${importKeyWord} { ${exportedDeclarations.map((d: any) => {
+  return `${importKeyword} { ${exportedDeclarations.map((d: any) => {
     if (d instanceof DefaultDeclaration) {
       return `default as ${d.name}`;
     }
