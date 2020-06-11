@@ -2,7 +2,7 @@
     "name": "importall",
     "displayName": "importall",
     "description": "Allows easy importing and exporting of all files local to a directory.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "jonnywildey",
     "repository": {
         "type": "git",
