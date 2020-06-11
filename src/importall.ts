@@ -33,7 +33,9 @@ export interface IImportAllParams {
 }
 
 export const importall = ({ parsedFiles, importKeyword }: IImportAllParams) => {
-  return parsedFiles.map(parsedFile => generateImportStatementsFromFile(parsedFile, importKeyword)).join("\n");
+  return parsedFiles.map(parsedFile => generateImportStatementsFromFile(parsedFile, importKeyword))
+  .filter( f => Boolean(f))
+  .join("\n");
 }
 
 export interface IGenerateImportStatementsFromFileParams {
@@ -41,14 +43,14 @@ export interface IGenerateImportStatementsFromFileParams {
   importKeyword: ImportKeyword;
 }
 
-const generateImportStatementsFromFile = (parsedFile: File, importKeyword: ImportKeyword): string => {
+const generateImportStatementsFromFile = (parsedFile: File, importKeyword: ImportKeyword): string | undefined => {
   // Make sure there are some declarations
   if (!parsedFile.declarations || parsedFile.declarations.length === 0) {
-    return "";
+    return undefined;
   }
   const exportedDeclarations = parsedFile.declarations.filter((f) => (f as any).isExported);
   if (exportedDeclarations.length === 0) {
-    return "";
+    return undefined;
   }
   // Generate import statement
   return `${importKeyword} { ${exportedDeclarations.map((d: any) => {

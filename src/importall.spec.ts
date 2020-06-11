@@ -19,7 +19,7 @@ describe("importall", () => {
 
     expect(importStatement).toEqual(`import { IAppleTreeParams, appleTree } from "./appleTree";
 import { IAppleTreeViewProps, appleTreeView } from "./appleTreeView";
-import { ICiderMakerParams, CiderTypes, ciderMaker } from "./ciderMaker";
+import { ICiderMakerParams, CiderTypes, default as ciderMaker } from "./ciderMaker";
 import { IPeachTreeParams, peachTree } from "./peachTree";`);
 
   });
@@ -35,7 +35,7 @@ import { IPeachTreeParams, peachTree } from "./peachTree";`);
     expect(exportStatement).toEqual(`export { ITestParams } from "./appleTree.test";
 export { IAppleTreeParams, appleTree } from "./appleTree";
 export { IAppleTreeViewProps, appleTreeView } from "./appleTreeView";
-export { ICiderMakerParams, CiderTypes, ciderMaker } from "./ciderMaker";
+export { ICiderMakerParams, CiderTypes, default as ciderMaker } from "./ciderMaker";
 export { IPeachTreeParams, peachTree } from "./peachTree";`);
 
   });
@@ -50,9 +50,20 @@ export { IPeachTreeParams, peachTree } from "./peachTree";`);
 
     expect(importStatement).toEqual(`import { IAppleTreeParams, appleTree } from "./appleTree";
 import { IAppleTreeViewProps, appleTreeView } from "./appleTreeView";
-import { ICiderMakerParams, CiderTypes, ciderMaker } from "./ciderMaker";
+import { ICiderMakerParams, CiderTypes, default as ciderMaker } from "./ciderMaker";
 import { IPeachTreeParams, peachTree } from "./peachTree";`);
 
+  });
+
+  it("returns empty string if no files to import", async () => {
+    const parsedFiles = await getParsedFiles({
+      filePath: join(ORCHARD_DIR, "../", "index.ts"),
+      ignoreGlobs: [ignoreTest],
+    });
+
+    const importStatement = importall({ parsedFiles, importKeyword: "import" });
+
+    expect(importStatement).toEqual("");
   });
 
 });

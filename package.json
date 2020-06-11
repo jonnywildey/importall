@@ -26,8 +26,8 @@
     "scripts": {
         "lint": "tslint --project .",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "jest",
-        "coverage": "jest --coverage",
+        "test": "jest --roots src",
+        "coverage": "jest --coverage --roots src",
         "vscode:prepublish": "webpack --mode production",
         "webpack": "rimraf dist && webpack --mode development",
         "webpack-dev": "webpack --mode development --watch",

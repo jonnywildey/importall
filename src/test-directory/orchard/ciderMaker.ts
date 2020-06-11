@@ -5,4 +5,6 @@ export interface ICiderMakerParams {
 
 export type CiderTypes = "apple" | "peach";
 
-export const ciderMaker = ({ apples, peaches }: ICiderMakerParams) => (apples + peaches) * 0.1;
+const ciderMaker = ({ apples, peaches }: ICiderMakerParams) => (apples + peaches) * 0.1;
+
+export default ciderMaker;
